@@ -17,8 +17,6 @@ public class SalaryInfo {
 
         int[] earned = new int[names.length];
 
-
-
         for (String record : data) {
             String[] parts = record.split(" ");
             LocalDate d = LocalDate.parse(parts[0], formatter);
