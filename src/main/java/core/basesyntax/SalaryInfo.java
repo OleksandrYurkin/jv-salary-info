@@ -5,7 +5,7 @@ import java.time.format.DateTimeFormatter;
 
 public class SalaryInfo {
 
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     public String getSalaryInfo(String[] names, String[] data, String dateFrom, String dateTo) {
 
@@ -17,9 +17,7 @@ public class SalaryInfo {
 
         int[] earned = new int[names.length];
 
-        if (names == null || data == null || dateFrom == null || dateTo == null) {
-            throw new IllegalArgumentException("Input must not be null");
-        }
+
 
         for (String record : data) {
             String[] parts = record.split(" ");
