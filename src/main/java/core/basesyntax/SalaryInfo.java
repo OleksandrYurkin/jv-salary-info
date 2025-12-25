@@ -4,49 +4,52 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class SalaryInfo {
-
-    private static final DateTimeFormatter formatter =
+    private static final DateTimeFormatter DATE_FORMATTER =
             DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     private static final int DATE_INDEX = 0;
-
     private static final int NAME_INDEX = 1;
-
     private static final int HOURS_INDEX = 2;
-
     private static final int RATE_INDEX = 3;
+    private static final int PARTS_COUNT = 4;
 
     public String getSalaryInfo(String[] names, String[] data, String dateFrom, String dateTo) {
+        LocalDate from = LocalDate.parse(dateFrom, DATE_FORMATTER);
+        LocalDate to = LocalDate.parse(dateTo, DATE_FORMATTER);
 
-        StringBuilder stringBuilder = new StringBuilder();
+        String lineSeparator = System.lineSeparator();
+        StringBuilder sb = new StringBuilder();
+        sb.append("Report for period ").append(dateFrom).append(" - ").append(dateTo);
 
-        LocalDate from = LocalDate.parse(dateFrom, formatter);
-
-        LocalDate to = LocalDate.parse(dateTo, formatter);
-
-        int[] earned = new int[names.length];
-
-        for (String record : data) {
-            String[] parts = record.split(" ");
-            LocalDate recordDate = LocalDate.parse(parts[DATE_INDEX], formatter);
-            if (!recordDate.isBefore(from) && !recordDate.isAfter(to)) {
-                for (int i = 0; i < names.length; i++) {
-                    if (parts[NAME_INDEX].equals(names[i])) {
-                        earned[i] = (Integer.parseInt(parts[HOURS_INDEX])
-                                * Integer.parseInt(parts[RATE_INDEX]))
-                                + earned[i];
-                    }
-                }
-            }
-        }
-        stringBuilder.append("Report for period ").append(dateFrom).append(" - ")
-                .append(dateTo).append(System.lineSeparator());
         for (int i = 0; i < names.length; i++) {
-            stringBuilder.append(names[i]).append(" - ").append(earned[i]);
-            if (i < names.length - 1) {
-                stringBuilder.append(System.lineSeparator());
+            int totalEarned = 0;
+
+            for (String record : data) {
+                String[] parts = record.split(" ");
+                if (parts.length != PARTS_COUNT) {
+                    continue;
+                }
+
+                LocalDate recordDate = LocalDate.parse(parts[DATE_INDEX], DATE_FORMATTER);
+                if (recordDate.isBefore(from) || recordDate.isAfter(to)) {
+                    continue;
+                }
+
+                if (!names[i].equals(parts[NAME_INDEX])) {
+                    continue;
+                }
+
+                int hours = Integer.parseInt(parts[HOURS_INDEX]);
+                int rate = Integer.parseInt(parts[RATE_INDEX]);
+                totalEarned += hours * rate;
             }
+
+            sb.append(lineSeparator)
+                    .append(names[i])
+                    .append(" - ")
+                    .append(totalEarned);
         }
-        return stringBuilder.toString();
+
+        return sb.toString();
     }
 }
